@@ -3,20 +3,20 @@ import path from 'path';
 import { promises as fs } from 'fs';
 
 class Filesystem extends Storage {
-  constructor(basePath) {
+  constructor(directory) {
     super();
-    this.basePath = basePath;
+    this.directory = directory;
   }
 
   async load(id) {
-    const filePath = path.join(this.basePath, `${id}.json`);
-    const data = await fs.readFile(filePath, 'utf-8');
+    const file = path.join(this.directory, `${id}.json`);
+    const data = await fs.readFile(file, 'utf-8');
     return JSON.parse(data);
   }
 
   async save(id, object) {
-    const filePath = path.join(this.basePath, `${id}.json`);
-    await fs.writeFile(filePath, JSON.stringify(object));
+    const file = path.join(this.directory, `${id}.json`);
+    await fs.writeFile(file, JSON.stringify(object));
   }
 }
 
