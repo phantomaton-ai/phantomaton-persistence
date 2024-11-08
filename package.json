@@ -1,0 +1,24 @@
+{
+  "name": "phantomaton-persistence",
+  "version": "0.0.0",
+  "main": "phantomaton-persistence.js",
+  "scripts": {
+    "all": "lovecraft -a",
+    "cov": "lovecraft -c",
+    "lint": "lovecraft -l",
+    "pub": "lovecraft -a -p",
+    "test": "lovecraft"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phantomaton-ai/phantomaton-persistence.git"
+  },
+  "keywords": [],
+  "author": "Phantomaton",
+  "license": "MIT",
+  "description": "",
+  "type": "module",
+  "devDependencies": {
+    "lovecraft": "^1.0.3"
+  }
+}
