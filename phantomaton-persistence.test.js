@@ -1,23 +1,25 @@
 import { expect, stub } from 'lovecraft';
 import hierophant from 'hierophant';
+import plugins from 'phantomaton-plugins';
+
 import persistence from './phantomaton-persistence.js';
-import Storage from './storage.js';
 
 describe('Phantomaton Persistence Plugin', () => {
   let container;
 
   beforeEach(() => {
+    const plugin = persistence();
     container = hierophant();
-    container.install(persistence.plugin());
+    plugin.install.forEach(extension => container.install(extension));
   });
 
-  it('provides the storage extension point', () => {
+  it('provides an optional storage extension point', () => {
     const [getStorage] = container.resolve(persistence.storage.resolve);
-    expect(getStorage).to.be.a('function');
+    expect(getStorage).to.be.undefined;
   });
 
   it('allows custom storage providers', async () => {
-    class MemoryStorage extends Storage {
+    class MemoryStorage {
       async load(id) {
         return { id, data: 'test' };
       }
@@ -27,15 +29,12 @@ describe('Phantomaton Persistence Plugin', () => {
       }
     }
 
-    const customPersistence = persistence.plugin({
-      storage: plugins.create([
-        plugins.define(persistence.storage).as(MemoryStorage)
-      ])
-    });
+    const plugin = plugins.create([
+      plugins.define(persistence.storage).as(new MemoryStorage())
+    ])();
+    plugin.install.forEach(extension => container.install(extension));
 
-    container.install(customPersistence);
-    const [getStorage] = container.resolve(persistence.storage.resolve);
-    const storage = await getStorage();
+    const [storage] = container.resolve(persistence.storage.resolve);
     expect(storage).to.be.an.instanceOf(MemoryStorage);
 
     const loaded = await storage.load('abc');
