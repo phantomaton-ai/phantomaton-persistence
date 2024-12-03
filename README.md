@@ -6,6 +6,8 @@ The Phantomaton Persistence module provides a flexible storage abstraction for t
 
 The core of the Phantomaton Persistence module is the `storage` extension point. This extension point allows plugins to provide their own storage implementation, which can then be used by other parts of the Phantomaton system.
 
+The `storage` extension point is optional - if no storage provider is registered, it will resolve to `undefined`. This allows Phantomaton to function without a persistence layer, if needed.
+
 To define a custom storage provider, you can use the `plugins.define` helper:
 
 ```javascript
@@ -45,17 +47,22 @@ const myPlugin = plugins.create({
   plugins.define(extensions.start)
     .with(extensions.storage)
     .as(async (storage) => {
-      const data = await storage.load('my-data');
-      console.log('Loaded data:', data);
+      // Check if storage is available
+      if (storage) {
+        const data = await storage.load('my-data');
+        console.log('Loaded data:', data);
 
-      const updatedData = { ...data, new: 'value' };
-      await storage.save('my-data', updatedData);
-      console.log('Saved data:', updatedData);
+        const updatedData = { ...data, new: 'value' };
+        await storage.save('my-data', updatedData);
+        console.log('Saved data:', updatedData);
+      } else {
+        console.log('No storage provider available');
+      }
     })
 ]);
 ```
 
-In this example, the plugin declares a dependency on the `persistence.storage` extension point. When the `start` extension point is resolved, it uses the provided storage provider to load and save data.
+In this example, the plugin declares a dependency on the `persistence.storage` extension point. When the `start` extension point is resolved, it checks if a storage provider is available before using it to load and save data.
 
 ## Contributing 🦄
 
